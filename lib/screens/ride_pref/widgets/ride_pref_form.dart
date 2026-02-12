@@ -124,20 +124,22 @@ class _RidePrefFormState extends State<RidePrefForm> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(Icons.calendar_month),
-        ),
-        ElevatedButton(
+        IconButton(
+          icon: Icon(Icons.calendar_month),
           onPressed: () {
             pickDate(context);
           },
-          child: Text(
+        ),
+        Text(
             departureDate == null
                 ? "Select Date"
-                : '${departureDate!.weekday} / ${departureDate!.day} / ${departureDate!.month}',
+                : "${departureDate!.day}/${departureDate!.month}/${departureDate!.year}",
+            style: BlaTextStyles.label.copyWith(
+              color: departureDate == null
+                  ? BlaColors.greyLight
+                  : BlaColors.primary,
+            ),
           ),
-        ),
       ],
     );
   }
