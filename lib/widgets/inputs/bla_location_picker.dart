@@ -14,50 +14,76 @@ class BlaLocationPicker extends StatefulWidget {
 }
 
 class _BlaLocationPickerState extends State<BlaLocationPicker> {
-  List<Location>? filterLocation;
+  List<Location> filteredLocations = [];
+  String searchQuery = "";
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: InputDecoration(hintText: "Search..."),
-          onChanged: (value) {
-            final query = value.toLowerCase();
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            decoration: InputDecoration(hintText: "Search Location..."),
+            onChanged: (value) {
+              final query = value.toLowerCase();
 
-            final filter = fakeLocations.where((e) {
-              return e.name.toLowerCase().contains(query);
-            }).toList();
-            setState(() {
-              filterLocation = filter;
-            });
-          },
+              setState(() {
+                searchQuery = query;
+
+                if (query.isEmpty) {
+                  filteredLocations = [];
+                } else {
+                  filteredLocations = fakeLocations.where((e) {
+                    return e.name.toLowerCase().contains(query);
+                  }).toList();
+                }
+              });
+            },
+          ),
         ),
-        filterLocation == null || filterLocation!.isEmpty
-            ? Container()
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: filterLocation!.length,
+        Expanded(
+          child: searchQuery.isEmpty
+              ? Center(
+                  child: Text(
+                    "Search for a location",
+                    style: BlaTextStyles.body,
+                  ),
+                )
+              : filteredLocations.isEmpty
+              ? Center(
+                  child: Text("No locations found", style: BlaTextStyles.body),
+                )
+              : ListView.builder(
+                  itemCount: filteredLocations.length,
                   itemBuilder: (context, index) {
+                    final location = filteredLocations[index];
+
                     return Column(
                       children: [
                         ListTile(
                           title: Text(
-                            filterLocation![index].name,
+                            location.name,
                             style: BlaTextStyles.heading,
                           ),
                           subtitle: Text(
-                            filterLocation![index].country.name,
+                            location.country.name,
                             style: BlaTextStyles.body,
                           ),
-                          trailing: Icon(Icons.arrow_forward_ios_rounded),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context, location);
+                          },
                         ),
                         BlaDivider(),
                       ],
                     );
                   },
                 ),
-              ),
+        ),
       ],
     );
   }
